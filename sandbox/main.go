@@ -52,7 +52,7 @@ func getAccessToken() (string, error) {
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
 		Scopes: []string{
-			// CAUTION SET SCOPES for APIs
+			// CAUTION: set scopes for APIs
 			"user-read-playback-state",
 			"playlist-read-private",
 			"user-modify-playback-state",
