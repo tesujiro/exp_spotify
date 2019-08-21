@@ -18,7 +18,7 @@ import (
 
 func usage() {
 	fmt.Println("Usage:")
-	fmt.Print(`	cli search album [keyword]
+	fmt.Print(`	cli search album|artist|playlist|track [keyword]
 	cli list devices
 `)
 }
@@ -196,7 +196,20 @@ func main() {
 				fmt.Printf("Album[%v]:\t", i)
 				fmt.Printf("release:%v\t", album.ReleaseDatePrecision)
 				fmt.Printf("name:%v\t", album.Name)
-				//fmt.Printf("artists:%v\t", album.Artists)
+				//fmt.Printf("artists:%#v\t", album.Artists)
+				fmt.Printf("artists:")
+				for _, artist := range album.Artists {
+					b, err := get(token, artist.Href, nil)
+					if err != nil {
+						log.Print(err)
+					}
+					var a Artist
+					err = json.Unmarshal(b, &a)
+					if err != nil {
+						log.Print(err)
+					}
+					fmt.Printf(" %v", a.Name)
+				}
 				fmt.Printf("\n")
 			}
 		case "artist":
