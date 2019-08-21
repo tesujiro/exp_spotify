@@ -13,7 +13,6 @@ import (
 	"os/exec"
 	"runtime"
 
-	"github.com/davecgh/go-spew/spew"
 	"golang.org/x/oauth2"
 )
 
@@ -81,7 +80,7 @@ func getAccessToken() (string, error) {
 	state := fmt.Sprintf("%x", stateBytes)
 	//rawurl := conf.AuthCodeURL(state, oauth2.AccessTypeOffline)
 	rawurl := conf.AuthCodeURL(state, oauth2.SetAuthURLParam("response_type", "token"))
-	fmt.Println("URL:", rawurl)
+	//fmt.Println("URL:", rawurl)
 
 	// open in browser
 	err = openbrowser(rawurl)
@@ -95,10 +94,10 @@ func getAccessToken() (string, error) {
 	quit := make(chan string)
 	go http.Serve(l, http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if req.URL.Path == "/" {
-			fmt.Println("HandlerFunc1!!")
+			//fmt.Println("HandlerFunc1!!")
 			w.Write([]byte(`<script>location.href = "/close?" + location.hash.substring(1);</script>`))
 		} else {
-			fmt.Println("HandlerFunc2!!")
+			//fmt.Println("HandlerFunc2!!")
 			w.Write([]byte(`<script>window.open("about:blank","_self").close()</script>`))
 			w.(http.Flusher).Flush()
 			quit <- req.URL.Query().Get("access_token")
@@ -136,7 +135,7 @@ func get(token string, endpoint string, query map[string]string) ([]byte, error)
 	if resp.StatusCode >= 400 {
 		return nil, fmt.Errorf("bad response status code %d", resp.StatusCode)
 	}
-	fmt.Println("response status code ", resp.StatusCode)
+	//fmt.Println("response status code ", resp.StatusCode)
 
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -156,7 +155,7 @@ func main() {
 	if err != nil {
 		log.Fatal("faild to get access token:", err)
 	}
-	fmt.Println("token:", token)
+	//fmt.Println("token:", token)
 
 	cmd := os.Args[1]
 	args := os.Args[2:]
@@ -166,7 +165,12 @@ func main() {
 	query := make(map[string]string)
 	switch cmd {
 	case "search":
-		if len(args) < 2 || args[0] != "artist" {
+		typ := []string{"album", "artist", "playlist", "track"}
+		rev_type := make(map[string]bool)
+		for _, k := range typ {
+			rev_type[k] = true
+		}
+		if len(args) < 2 || !rev_type[args[0]] {
 			usage()
 			os.Exit(1)
 		}
@@ -180,6 +184,21 @@ func main() {
 			os.Exit(1)
 		}
 		switch query["type"] {
+		case "album":
+			var albums Albums
+			err = json.Unmarshal(b, &albums)
+			if err != nil {
+				log.Print(err)
+				os.Exit(1)
+			}
+			//spew.Dump(albums)
+			for i, album := range albums.Albums.Items {
+				fmt.Printf("Album[%v]:\t", i)
+				fmt.Printf("release:%v\t", album.ReleaseDatePrecision)
+				fmt.Printf("name:%v\t", album.Name)
+				//fmt.Printf("artists:%v\t", album.Artists)
+				fmt.Printf("\n")
+			}
 		case "artist":
 			var artists Artists
 			err = json.Unmarshal(b, &artists)
@@ -187,7 +206,12 @@ func main() {
 				log.Print(err)
 				os.Exit(1)
 			}
-			spew.Dump(artists)
+			//spew.Dump(artists)
+			for i, artist := range artists.Artists.Items {
+				fmt.Printf("Artists[%v]:\t", i)
+				fmt.Printf("name:%v\t", artist.Name)
+				fmt.Printf("\n")
+			}
 		}
 	default:
 		usage()

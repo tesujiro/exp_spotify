@@ -9,6 +9,15 @@ type PagingBase struct {
 	Previous string
 }
 
+type Albums struct {
+	Albums PagingAlbums
+}
+
+type PagingAlbums struct {
+	PagingBase
+	Items []Album
+}
+
 type Artists struct {
 	Artists PagingArtists
 }
@@ -29,6 +38,25 @@ type Image struct {
 	Height int
 	URL    string
 	Width  int
+}
+
+type Restrictions map[string]string
+
+type Album struct {
+	AlbumGroup           string
+	AlbumType            string
+	Artists              []Artist
+	AvailableMarkets     []string
+	ExternalURLs         ExternalURLs
+	Href                 string
+	Id                   string
+	Images               []Image
+	Name                 string
+	ReleaseDate          string
+	ReleaseDatePrecision string
+	Restrictions         Restrictions
+	Type                 string
+	URI                  string
 }
 
 type Artist struct {
