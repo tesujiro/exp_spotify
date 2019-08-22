@@ -9,3 +9,6 @@ search:
 
 profile:
 	./cli get profile
+
+playlist:
+	./cli get playlists

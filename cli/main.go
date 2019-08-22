@@ -10,7 +10,8 @@ import (
 func usage() {
 	fmt.Println("Usage:")
 	fmt.Print(`	cli search album|artist|playlist|track [keyword]
-	cli profile [user_id]
+	cli get profile [user_id]
+	cli get playlists [user_id]
 	cli list devices
 `)
 }
@@ -31,9 +32,11 @@ func main() {
 	cmd := os.Args[1]
 	args := os.Args[2:]
 	endpoint := map[string]string{
-		"search":     "https://api.spotify.com/v1/search",
-		"profile/me": "https://api.spotify.com/v1/me",
-		"profile":    "https://api.spotify.com/v1/users/{user_id}",
+		"search":       "https://api.spotify.com/v1/search",
+		"playlists/me": "https://api.spotify.com/v1/me/playlists",
+		"playlists":    "https://api.spotify.com/v1/users/{user_id}/playlists",
+		"profile/me":   "https://api.spotify.com/v1/me",
+		"profile":      "https://api.spotify.com/v1/users/{user_id}",
 	}
 	switch cmd {
 	case "search":
@@ -53,6 +56,26 @@ func main() {
 				usage()
 				os.Exit(1)
 			}
+		case "playlists":
+			switch len(args) {
+			case 0:
+				playlists(token, endpoint["playlists/me"])
+			case 1:
+				ep := strings.ReplaceAll(endpoint["playlists"], "{user_id}", args[0])
+				playlists(token, ep)
+			default:
+				usage()
+				os.Exit(1)
+			}
+		default:
+			usage()
+			os.Exit(1)
+		}
+	case "create":
+		obj := args[0]
+		args = args[1:]
+		switch obj {
+		case "playlist":
 		}
 	default:
 		usage()

@@ -18,6 +18,7 @@ type SpotifyAPI struct {
 */
 
 func get(token string, endpoint string, query map[string]string) ([]byte, error) {
+	fmt.Println("endpoint:", endpoint)
 	baseUrl, err := url.Parse(endpoint)
 	if err != nil {
 		return nil, err
