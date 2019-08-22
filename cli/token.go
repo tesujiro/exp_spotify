@@ -78,7 +78,7 @@ func getAccessToken() (string, error) {
 	filename := "token.gob"
 	token, timestamp, err := load(filename)
 	if err == nil {
-		if timestamp.Before(timestamp.Add(1 * time.Hour)) {
+		if time.Now().Before(timestamp.Add(1 * time.Hour)) {
 			return token, nil
 		}
 	} else if err != nil && !os.IsNotExist(err) {
