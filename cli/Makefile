@@ -8,4 +8,4 @@ search:
 	./cli search playlist harakami
 
 profile:
-	./cli profile
+	./cli get profile

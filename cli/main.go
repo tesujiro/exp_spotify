@@ -17,7 +17,7 @@ func usage() {
 
 func main() {
 	var err error
-	if len(os.Args) < 2 {
+	if len(os.Args) < 3 {
 		usage()
 		os.Exit(1)
 	}
@@ -37,17 +37,22 @@ func main() {
 	}
 	switch cmd {
 	case "search":
-		search(token, endpoint[cmd], args)
-	case "profile":
-		switch len(args) {
-		case 0:
-			profile(token, endpoint["profile/me"])
-		case 1:
-			ep := strings.ReplaceAll(endpoint["profile"], "{user_id}", args[0])
-			profile(token, ep)
-		default:
-			usage()
-			os.Exit(1)
+		search(token, endpoint["search"], args)
+	case "get":
+		obj := args[0]
+		args = args[1:]
+		switch obj {
+		case "profile":
+			switch len(args) {
+			case 0:
+				profile(token, endpoint["profile/me"])
+			case 1:
+				ep := strings.ReplaceAll(endpoint["profile"], "{user_id}", args[0])
+				profile(token, ep)
+			default:
+				usage()
+				os.Exit(1)
+			}
 		}
 	default:
 		usage()
