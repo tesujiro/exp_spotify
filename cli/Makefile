@@ -6,3 +6,6 @@ search:
 	./cli search artist つのだ
 	./cli search album Secret
 	./cli search playlist harakami
+
+profile:
+	./cli profile

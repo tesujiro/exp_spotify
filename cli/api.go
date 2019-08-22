@@ -7,6 +7,16 @@ import (
 	"net/url"
 )
 
+/*
+type SpotifyAPI struct {
+	cmd      string
+	target   string
+	usage    string
+	desc     string
+	endpoint string
+}
+*/
+
 func get(token string, endpoint string, query map[string]string) ([]byte, error) {
 	baseUrl, err := url.Parse(endpoint)
 	if err != nil {
