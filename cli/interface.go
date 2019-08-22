@@ -1,5 +1,9 @@
 package main
 
+import "time"
+
+type Timestamp time.Time
+
 type PagingBase struct {
 	Href     string
 	Limit    int
@@ -27,6 +31,21 @@ type PagingArtists struct {
 	Items []Artist
 }
 
+type Playlists struct {
+	Playlists PagingPlaylists
+}
+
+type PagingPlaylists struct {
+	PagingBase
+	Items []Playlist
+}
+
+type PagingPlaylistTracks struct {
+	PagingBase
+	PlaylistTracks []PlaylistTrack
+}
+
+type ExternalIDs map[string]string
 type ExternalURLs map[string]string
 
 type Followers struct {
@@ -41,6 +60,17 @@ type Image struct {
 }
 
 type Restrictions map[string]string
+
+type User struct {
+	DisplayName  string
+	ExternalURLs ExternalURLs
+	Followers    Followers
+	Href         string
+	Id           string
+	Images       []Image
+	Type         string
+	URI          string
+}
 
 type Album struct {
 	AlbumGroup           string
@@ -68,6 +98,59 @@ type Artist struct {
 	Images       []Image
 	Name         string
 	Popularity   int
+	Type         string
+	URI          string
+}
+
+type Playlist struct {
+	Collaborative bool
+	Description   string
+	ExternalURLs  ExternalURLs `json:"external_urls"`
+	Followers     Followers
+	Href          string
+	Id            string
+	Images        []Image
+	Name          string
+	Owner         User
+	Public        bool
+	SnapshotId    string
+	Tracks        PagingPlaylistTracks
+	Type          string
+	URI           string
+}
+
+type PlaylistTrack struct {
+	AddedAt Timestamp
+	AddedBy User
+	IsLocal bool
+	Track   Track
+}
+
+type Track struct {
+	Album            Album
+	Artists          []Artist
+	AvailableMarkets []string
+	DiscNumber       int
+	DurationMs       int
+	Explicit         bool
+	ExternalIDs      ExternalIDs
+	ExternalURLs     ExternalURLs
+	Href             string
+	Id               string
+	IsPlayable       bool
+	LinkedFrom       TrackLink
+	Name             string
+	Popularity       int
+	PreviewURL       string
+	TrackNumber      int
+	Type             string
+	URI              string
+}
+
+type TrackLink struct {
+	ExternalURLs ExternalURLs
+	Href         string
+	Id           string
 	Type         string
 	URI          string
 }
