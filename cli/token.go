@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/rand"
+	"encoding/gob"
 	"fmt"
 	"log"
 	"net"
@@ -9,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"time"
 
 	"golang.org/x/oauth2"
 )
@@ -32,7 +34,59 @@ func openbrowser(rawurl string) error {
 	return err
 }
 
+func save(token string, timestamp *time.Time, filename string) error {
+	fd, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer fd.Close()
+
+	enc := gob.NewEncoder(fd)
+	err = enc.Encode(token)
+	if err != nil {
+		return err
+	}
+	err = enc.Encode(timestamp)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func load(filename string) (string, *time.Time, error) {
+	fd, err := os.Open(filename)
+	if err != nil {
+		return "", nil, err
+	}
+	defer fd.Close()
+
+	dec := gob.NewDecoder(fd)
+	var token string
+	err = dec.Decode(&token)
+	if err != nil {
+		return "", nil, err
+	}
+	var timestamp *time.Time
+	err = dec.Decode(&timestamp)
+	if err != nil {
+		return "", nil, err
+	}
+	return token, timestamp, nil
+}
+
 func getAccessToken() (string, error) {
+	filename := "token.gob"
+	token, timestamp, err := load(filename)
+	if err == nil {
+		if timestamp.Before(timestamp.Add(1 * time.Hour)) {
+			return token, nil
+		}
+	} else if err != nil && !os.IsNotExist(err) {
+		fmt.Printf("load index error: %v\n", err)
+		return "", err
+	}
+	now := time.Now()
+
 	l, err := net.Listen("tcp", "localhost:8989")
 	if err != nil {
 		return "", err
@@ -94,5 +148,11 @@ func getAccessToken() (string, error) {
 		}
 	}))
 
-	return <-quit, nil
+	token = <-quit
+	err = save(token, &now, filename)
+	if err != nil {
+		fmt.Printf("save index error: %v\n", err)
+		os.Exit(1)
+	}
+	return token, nil
 }
