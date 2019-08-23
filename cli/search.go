@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 )
 
 func search(token string, endpoint string, args []string) {
@@ -37,23 +38,37 @@ func search(token string, endpoint string, args []string) {
 			os.Exit(1)
 		}
 		fmt.Println("Total:", albums.Albums.Total)
+		// get artists info concurrently for each albums
+		artists := make([][]Artist, len(albums.Albums.Items))
+		wg := sync.WaitGroup{}
+		for i, album := range albums.Albums.Items {
+			wg.Add(1)
+			go func(src []Artist, dst *[]Artist) {
+				defer wg.Done()
+				for _, artist := range src {
+					b, err := get(token, artist.Href, nil)
+					if err != nil {
+						log.Print(err)
+					}
+					var a Artist
+					err = json.Unmarshal(b, &a)
+					if err != nil {
+						log.Print(err)
+					}
+					*dst = append(*dst, a)
+				}
+			}(album.Artists, &artists[i])
+		}
+		wg.Wait()
+		// display album info
 		for i, album := range albums.Albums.Items {
 			fmt.Printf("Album[%v]:\t", i)
 			fmt.Printf("release:%v\t", album.ReleaseDatePrecision)
 			fmt.Printf("name:%v\t", album.Name)
 			//fmt.Printf("artists:%#v\t", album.Artists)
 			fmt.Printf("artists:")
-			for _, artist := range album.Artists {
-				b, err := get(token, artist.Href, nil)
-				if err != nil {
-					log.Print(err)
-				}
-				var a Artist
-				err = json.Unmarshal(b, &a)
-				if err != nil {
-					log.Print(err)
-				}
-				fmt.Printf(" %v", a.Name)
+			for _, artist := range artists[i] {
+				fmt.Printf(" %v", artist.Name)
 			}
 			fmt.Printf("\n")
 		}
