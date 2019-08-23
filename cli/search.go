@@ -63,7 +63,7 @@ func search(token string, endpoint string, args []string) {
 		// display album info
 		for i, album := range albums.Albums.Items {
 			fmt.Printf("Album[%v]:\t", i)
-			fmt.Printf("release:%v\t", album.ReleaseDatePrecision)
+			fmt.Printf("id:%v\t", album.Id)
 			fmt.Printf("name:%v\t", album.Name)
 			//fmt.Printf("artists:%#v\t", album.Artists)
 			fmt.Printf("artists:")
@@ -83,6 +83,7 @@ func search(token string, endpoint string, args []string) {
 		fmt.Println("Total:", artists.Artists.Total)
 		for i, artist := range artists.Artists.Items {
 			fmt.Printf("Artists[%v]:\t", i)
+			fmt.Printf("id:%v\t", artist.Id)
 			fmt.Printf("name:%v\t", artist.Name)
 			fmt.Printf("\n")
 		}
@@ -96,6 +97,7 @@ func search(token string, endpoint string, args []string) {
 		fmt.Println("Total:", playlists.Playlists.Total)
 		for i, playlist := range playlists.Playlists.Items {
 			fmt.Printf("Playlist[%v]:\t", i)
+			fmt.Printf("id:%v\t", playlist.Id)
 			fmt.Printf("tracks:%v\t", playlist.Tracks.Total)
 			fmt.Printf("name:%v\t", playlist.Name)
 			fmt.Printf("\n")

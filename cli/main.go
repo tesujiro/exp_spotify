@@ -11,6 +11,7 @@ func usage() {
 	fmt.Println("Usage:")
 	fmt.Print(`	cli search album|artist|playlist|track [keyword]
 	cli get profile [user_id]
+	cli get playlist [playlist_id]
 	cli get playlists [user_id]
 	cli list devices
 `)
@@ -33,6 +34,7 @@ func main() {
 	args := os.Args[2:]
 	endpoint := map[string]string{
 		"search":       "https://api.spotify.com/v1/search",
+		"playlist":     "https://api.spotify.com/v1/playlists/{playlist_id}",
 		"playlists/me": "https://api.spotify.com/v1/me/playlists",
 		"playlists":    "https://api.spotify.com/v1/users/{user_id}/playlists",
 		"profile/me":   "https://api.spotify.com/v1/me",
@@ -52,6 +54,15 @@ func main() {
 			case 1:
 				ep := strings.ReplaceAll(endpoint["profile"], "{user_id}", args[0])
 				profile(token, ep)
+			default:
+				usage()
+				os.Exit(1)
+			}
+		case "playlist":
+			switch len(args) {
+			case 1:
+				ep := strings.ReplaceAll(endpoint["playlist"], "{playlist_id}", args[0])
+				playlist(token, ep)
 			default:
 				usage()
 				os.Exit(1)

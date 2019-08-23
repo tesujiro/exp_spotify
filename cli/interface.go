@@ -42,7 +42,7 @@ type PagingPlaylists struct {
 
 type PagingPlaylistTracks struct {
 	PagingBase
-	PlaylistTracks []PlaylistTrack
+	Items []PlaylistTrack
 }
 
 type ExternalIDs map[string]string
