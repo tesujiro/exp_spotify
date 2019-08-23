@@ -74,11 +74,13 @@ func load(filename string) (string, *time.Time, error) {
 	return token, timestamp, nil
 }
 
+const validDuration = 1 * time.Hour
+
 func getAccessToken() (string, error) {
 	filename := "token.gob"
 	token, timestamp, err := load(filename)
 	if err == nil {
-		if time.Now().Before(timestamp.Add(1 * time.Hour)) {
+		if time.Now().Before(timestamp.Add(validDuration)) {
 			return token, nil
 		}
 	} else if err != nil && !os.IsNotExist(err) {
