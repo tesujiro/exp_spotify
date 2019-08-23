@@ -25,9 +25,37 @@ func playlist(token string, endpoint string) {
 	fmt.Printf("Desc: %v\n", playlist.Description)
 	fmt.Printf("Name: %v\n", playlist.Name)
 	//fmt.Printf("Owner: %+v\n", playlist.Owner)
+
+	// Get all tracks
+	tracks := playlist.Tracks.Items
+	total := playlist.Tracks.Total
+	limit := playlist.Tracks.Limit
+	query := make(map[string]string)
+	endpoint += "/tracks" //TODO: not good
+	query["limit"] = fmt.Sprintf("%v", limit)
+	for i := 0; i < total/limit; i++ {
+		query["offset"] = fmt.Sprintf("%v", limit*(i+1))
+		b, err := get(token, endpoint, query)
+		if err != nil {
+			log.Print(err)
+			os.Exit(1)
+		}
+		var delta PagingPlaylistTracks
+		err = json.Unmarshal(b, &delta)
+		if err != nil {
+			log.Print(err)
+			os.Exit(1)
+		}
+		for _, track := range delta.Items {
+			tracks = append(tracks, track)
+		}
+	}
+
 	fmt.Printf("Tracks: %v\n", playlist.Tracks.Total)
-	for i, ptrack := range playlist.Tracks.Items {
-		fmt.Printf("Track[%v]: %v (", i, ptrack.Track.Name)
+	for i, ptrack := range tracks {
+		fmt.Printf("Track[%v]:\t", i)
+		fmt.Printf("ID: %v\t", ptrack.Track.Id)
+		fmt.Printf("%v (", ptrack.Track.Name)
 		sep := ""
 		for _, a := range ptrack.Track.Album.Artists {
 			fmt.Printf("%v%v", sep, a.Name)
