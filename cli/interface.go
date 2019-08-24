@@ -22,23 +22,23 @@ type PagingAlbums struct {
 	Items []Album
 }
 
-type Artists struct { // for Search
-	Artists PagingArtists
-}
+//type Artists struct { // for Search
+//Artists PagingArtists
+//}
 
-type PagingArtists struct {
-	PagingBase
-	Items []Artist
-}
+//type PagingArtists struct {
+//PagingBase
+//Items []Artist
+//}
 
-type Playlists struct { // for Search
-	Playlists PagingPlaylists
-}
+//type Playlists struct { // for Search
+//Playlists PagingPlaylists
+//}
 
-type PagingPlaylists struct {
-	PagingBase
-	Items []Playlist
-}
+//type PagingPlaylists struct {
+//PagingBase
+//Items []Playlist
+//}
 
 type PagingPlaylistTracks struct {
 	PagingBase

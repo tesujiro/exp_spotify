@@ -31,7 +31,13 @@ func search(token string, endpoint string, args []string) {
 	}
 	switch query["type"] {
 	case "album":
-		var albums Albums
+		//var albums Albums
+		var albums struct {
+			Albums struct {
+				PagingBase
+				Items []Album
+			}
+		}
 		err = json.Unmarshal(b, &albums)
 		if err != nil {
 			log.Print(err)
@@ -73,7 +79,13 @@ func search(token string, endpoint string, args []string) {
 			fmt.Printf("\n")
 		}
 	case "artist":
-		var artists Artists
+		//var artists Artists
+		var artists struct {
+			Artists struct {
+				PagingBase
+				Items []Artist
+			}
+		}
 		err = json.Unmarshal(b, &artists)
 		if err != nil {
 			log.Print(err)
@@ -88,7 +100,13 @@ func search(token string, endpoint string, args []string) {
 			fmt.Printf("\n")
 		}
 	case "playlist":
-		var playlists Playlists
+		//var playlists Playlists
+		var playlists struct {
+			Playlists struct {
+				PagingBase
+				Items []Playlist
+			}
+		}
 		err = json.Unmarshal(b, &playlists)
 		if err != nil {
 			log.Print(err)
