@@ -9,7 +9,7 @@ import (
 
 func usage() {
 	fmt.Println("Usage:")
-	fmt.Print(`	cli search album|artist|playlist|track [keyword]
+	fmt.Print(`	cli search album(s)|artist(s)|playlist(s)|track(s) [keyword]
 	cli get profile [user_id]
 	cli get playlist [playlist_id]
 	cli get playlists [user_id]

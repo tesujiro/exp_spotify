@@ -8,29 +8,28 @@ import (
 	"sync"
 )
 
-func search(token string, endpoint string, args []string) {
+func _search(token, endpoint, target string, args []string) ([]byte, error) {
 	query := make(map[string]string)
-	typ := []string{"album", "artist", "playlist", "track"}
-	rev_type := make(map[string]bool)
-	for _, k := range typ {
-		rev_type[k] = true
+	query["type"] = target
+	query["limit"] = "50"
+	for _, arg := range args {
+		query["q"] = arg
 	}
-	if len(args) < 2 || !rev_type[args[0]] {
+	return get(token, endpoint, query)
+}
+
+func search(token string, endpoint string, args []string) {
+	if len(args) < 2 {
 		usage()
 		os.Exit(1)
 	}
-	query["type"] = args[0]
-	query["limit"] = "50"
-	for _, arg := range args[1:] {
-		query["q"] = arg
-	}
-	b, err := get(token, endpoint, query)
-	if err != nil {
-		log.Print(err)
-		os.Exit(1)
-	}
-	switch query["type"] {
-	case "album":
+	switch args[0] {
+	case "album", "albums":
+		b, err := _search(token, endpoint, "album", args[1:])
+		if err != nil {
+			log.Print(err)
+			os.Exit(1)
+		}
 		var albums struct {
 			Albums PagingAlbums
 		}
@@ -74,7 +73,12 @@ func search(token string, endpoint string, args []string) {
 			}
 			fmt.Printf("\n")
 		}
-	case "artist":
+	case "artist", "artists":
+		b, err := _search(token, endpoint, "artist", args[1:])
+		if err != nil {
+			log.Print(err)
+			os.Exit(1)
+		}
 		var artists struct {
 			Artists PagingArtists
 		}
@@ -91,7 +95,12 @@ func search(token string, endpoint string, args []string) {
 			fmt.Printf("name:%v\t", artist.Name)
 			fmt.Printf("\n")
 		}
-	case "playlist":
+	case "playlist", "playlists":
+		b, err := _search(token, endpoint, "playlist", args[1:])
+		if err != nil {
+			log.Print(err)
+			os.Exit(1)
+		}
 		var playlists struct {
 			Playlists PagingPlaylists
 		}
@@ -108,7 +117,12 @@ func search(token string, endpoint string, args []string) {
 			fmt.Printf("name:%v\t", playlist.Name)
 			fmt.Printf("\n")
 		}
-	case "track":
+	case "track", "tracks":
+		b, err := _search(token, endpoint, "track", args[1:])
+		if err != nil {
+			log.Print(err)
+			os.Exit(1)
+		}
 		//fmt.Println("b=", string(b))
 		var tracks struct {
 			Tracks struct {
@@ -135,5 +149,8 @@ func search(token string, endpoint string, args []string) {
 			fmt.Printf(") album: \"%v\"", track.Album.Name)
 			fmt.Printf("\n")
 		}
+	default:
+		usage()
+		os.Exit(1)
 	}
 }
