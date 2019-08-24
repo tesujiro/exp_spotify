@@ -13,14 +13,14 @@ type PagingBase struct {
 	Previous string
 }
 
-type Albums struct { // for Search
-	Albums PagingAlbums
-}
+//type Albums struct { // for Search
+//Albums PagingAlbums
+//}
 
-type PagingAlbums struct {
-	PagingBase
-	Items []Album
-}
+//type PagingAlbums struct {
+//PagingBase
+//Items []Album
+//}
 
 //type Artists struct { // for Search
 //Artists PagingArtists
