@@ -71,7 +71,11 @@ func playlists(token string, endpoint string) {
 		log.Print(err)
 		os.Exit(1)
 	}
-	var playlists PagingPlaylists
+	//var playlists PagingPlaylists
+	var playlists struct {
+		PagingBase
+		Items []Playlist
+	}
 	err = json.Unmarshal(b, &playlists)
 	if err != nil {
 		log.Print(err)

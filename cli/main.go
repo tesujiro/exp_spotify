@@ -13,7 +13,9 @@ func usage() {
 	cli get profile [user_id]
 	cli get playlist [playlist_id]
 	cli get playlists [user_id]
-	cli list devices
+	cli list device(s)
+	cli list playlist(s)
+	cli list profile
 `)
 }
 
@@ -33,7 +35,9 @@ func main() {
 	cmd := os.Args[1]
 	args := os.Args[2:]
 	endpoint := map[string]string{
+		"devices/me":   "https://api.spotify.com/v1/me/player/devices",
 		"search":       "https://api.spotify.com/v1/search",
+		"player/me":    "https://api.spotify.com/v1/me/player/",
 		"playlist":     "https://api.spotify.com/v1/playlists/{playlist_id}",
 		"playlists/me": "https://api.spotify.com/v1/me/playlists",
 		"playlists":    "https://api.spotify.com/v1/users/{user_id}/playlists",
@@ -87,6 +91,23 @@ func main() {
 		args = args[1:]
 		switch obj {
 		case "playlist":
+		}
+	case "list":
+		if len(args) > 1 {
+			usage()
+			os.Exit(1)
+		}
+		obj := args[0]
+		switch obj {
+		case "device", "devices":
+			devices(token, endpoint["devices/me"])
+		case "playlists", "playlist":
+			playlists(token, endpoint["playlists/me"])
+		case "profile":
+			profile(token, endpoint["profile/me"])
+		default:
+			usage()
+			os.Exit(1)
 		}
 	default:
 		usage()
