@@ -51,7 +51,7 @@ type Restrictions map[string]string
 
 type User struct {
 	DisplayName  string
-	ExternalURLs ExternalURLs
+	ExternalURLs ExternalURLs `json:"external_urls"`
 	Followers    Followers
 	Href         string
 	Id           string
@@ -60,18 +60,28 @@ type User struct {
 	URI          string
 }
 
+type Device struct {
+	Id               string
+	IsActive         bool `json:"is_active"`
+	IsPrivateSession bool `json:"is_private_session"`
+	IsRestricted     bool `json:"is_restricted"`
+	Name             string
+	Type             string
+	VolumePercent    int `json:"volume_percent"`
+}
+
 type Album struct {
 	AlbumGroup           string
 	AlbumType            string
 	Artists              []Artist
 	AvailableMarkets     []string
-	ExternalURLs         ExternalURLs
+	ExternalURLs         ExternalURLs `json:"external_urls"`
 	Href                 string
 	Id                   string
 	Images               []Image
 	Name                 string
-	ReleaseDate          string
-	ReleaseDatePrecision string
+	ReleaseDate          string `json:"release_date"`
+	ReleaseDatePrecision string `json:"release_date_precision"`
 	Restrictions         Restrictions
 	Type                 string
 	URI                  string
@@ -101,7 +111,7 @@ type Playlist struct {
 	Name          string
 	Owner         User
 	Public        bool
-	SnapshotId    string
+	SnapshotId    string `json:"snapshot_id"`
 	Tracks        PagingPlaylistTracks
 	Type          string
 	URI           string
@@ -117,26 +127,26 @@ type PlaylistTrack struct {
 type Track struct {
 	Album            Album
 	Artists          []Artist
-	AvailableMarkets []string
-	DiscNumber       int
-	DurationMs       int
+	AvailableMarkets []string `json:"available_markets"`
+	DiscNumber       int      `json:"disc_number"`
+	DurationMs       int      `json:"duration_ms"`
 	Explicit         bool
-	ExternalIDs      ExternalIDs
-	ExternalURLs     ExternalURLs
+	ExternalIDs      ExternalIDs  `json:"external_ids"`
+	ExternalURLs     ExternalURLs `json:"external_urls"`
 	Href             string
 	Id               string
-	IsPlayable       bool
-	LinkedFrom       TrackLink
+	IsPlayable       bool      `json:"is_playable"`
+	LinkedFrom       TrackLink `json:"linked_from"`
 	Name             string
 	Popularity       int
-	PreviewURL       string
-	TrackNumber      int
+	PreviewURL       string `json:"preview_url"`
+	TrackNumber      int    `json:"track_number"`
 	Type             string
 	URI              string
 }
 
 type TrackLink struct {
-	ExternalURLs ExternalURLs
+	ExternalURLs ExternalURLs `json:"external_urls"`
 	Href         string
 	Id           string
 	Type         string
