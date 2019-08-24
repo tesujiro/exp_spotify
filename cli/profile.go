@@ -19,5 +19,5 @@ func profile(token string, endpoint string) {
 		log.Print(err)
 		os.Exit(1)
 	}
-	fmt.Printf("User.Id: %v\tType: %v\tDisplayName: %v\n", user.Id, user.Type, user.DisplayName)
+	fmt.Printf("User:\t%v\tType: %v\tDisplayName: %v\n", user.Id, user.Type, user.DisplayName)
 }

@@ -54,7 +54,7 @@ func playlist(token string, endpoint string) {
 	fmt.Printf("Tracks: %v\n", playlist.Tracks.Total)
 	for i, ptrack := range tracks {
 		fmt.Printf("Track[%v]:\t", i)
-		fmt.Printf("ID: %v\t", ptrack.Track.Id)
+		fmt.Printf("%v\t", ptrack.Track.Id)
 		fmt.Printf("%v (", ptrack.Track.Name)
 		sep := ""
 		for _, a := range ptrack.Track.Album.Artists {
@@ -80,7 +80,7 @@ func playlists(token string, endpoint string) {
 	fmt.Println("Total:", playlists.Total)
 	for i, playlist := range playlists.Items {
 		fmt.Printf("Playlist[%v]:\t", i)
-		fmt.Printf("Id:%v\t", playlist.Id)
+		fmt.Printf("%v\t", playlist.Id)
 		fmt.Printf("tracks:%v\t", playlist.Tracks.Total)
 		fmt.Printf("name:%v\t", playlist.Name)
 		fmt.Printf("desc:%v\t", playlist.Description)
