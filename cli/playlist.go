@@ -61,7 +61,7 @@ func playlist(token string, endpoint string) {
 			fmt.Printf("%v%v", sep, a.Name)
 			sep = ", "
 		}
-		fmt.Printf(") Album: \"%v\"\n", ptrack.Track.Album.Name)
+		fmt.Printf(") album: \"%v\"\n", ptrack.Track.Album.Name)
 	}
 }
 

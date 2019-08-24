@@ -102,5 +102,32 @@ func search(token string, endpoint string, args []string) {
 			fmt.Printf("name:%v\t", playlist.Name)
 			fmt.Printf("\n")
 		}
+	case "track":
+		//fmt.Println("b=", string(b))
+		var tracks struct {
+			Tracks struct {
+				PagingBase
+				Items []Track
+			}
+		}
+		err = json.Unmarshal(b, &tracks)
+		if err != nil {
+			log.Print(err)
+			os.Exit(1)
+		}
+		fmt.Println("Total:", tracks.Tracks.Total)
+		for i, track := range tracks.Tracks.Items {
+			fmt.Printf("Track[%v]:\t", i)
+			fmt.Printf("%v\t", track.Id)
+			fmt.Printf("name:%v\t", track.Name)
+			fmt.Printf("%v (", track.Name)
+			sep := ""
+			for _, a := range track.Artists {
+				fmt.Printf("%v%v", sep, a.Name)
+				sep = ", "
+			}
+			fmt.Printf(") album: \"%v\"", track.Album.Name)
+			fmt.Printf("\n")
+		}
 	}
 }
