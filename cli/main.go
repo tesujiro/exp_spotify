@@ -16,6 +16,7 @@ func usage() {
 	cli list device(s)
 	cli list playlist(s)
 	cli list profile
+	cli play [device_id]
 `)
 }
 
@@ -35,14 +36,16 @@ func main() {
 	cmd := os.Args[1]
 	args := os.Args[2:]
 	endpoint := map[string]string{
-		"devices/me":   "https://api.spotify.com/v1/me/player/devices",
-		"search":       "https://api.spotify.com/v1/search",
-		"player/me":    "https://api.spotify.com/v1/me/player/",
+		"devices/me": "https://api.spotify.com/v1/me/player/devices",
+		"search":     "https://api.spotify.com/v1/search",
+		//"player/me":    "https://api.spotify.com/v1/me/player/",
+		"play/me":      "https://api.spotify.com/v1/me/player/play",
 		"playlist":     "https://api.spotify.com/v1/playlists/{playlist_id}",
 		"playlists/me": "https://api.spotify.com/v1/me/playlists",
 		"playlists":    "https://api.spotify.com/v1/users/{user_id}/playlists",
 		"profile/me":   "https://api.spotify.com/v1/me",
-		"profile":      "https://api.spotify.com/v1/users/{user_id}",
+		//"profile/me": "http://www.google.com",
+		"profile": "https://api.spotify.com/v1/users/{user_id}",
 	}
 	switch cmd {
 	case "search":
@@ -105,6 +108,16 @@ func main() {
 			playlists(token, endpoint["playlists/me"])
 		case "profile":
 			profile(token, endpoint["profile/me"])
+		default:
+			usage()
+			os.Exit(1)
+		}
+	case "play":
+		switch len(args) {
+		case 0:
+			play(token, endpoint["play/me"], "")
+		case 1:
+			play(token, endpoint["play/me"], args[0])
 		default:
 			usage()
 			os.Exit(1)

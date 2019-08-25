@@ -134,7 +134,7 @@ func getAccessToken() (string, error) {
 		return "", err
 	}
 
-	// Get Access token
+	// Get Access token with some hacking
 	// see https://mattn.kaoriya.net/software/lang/go/20161231001721.htm
 	// see https://qiita.com/TakahikoKawasaki/items/8567c80528da43c7e844#%E3%83%95%E3%83%A9%E3%82%B0%E3%83%A1%E3%83%B3%E3%83%88%E9%83%A8%E3%81%AF-http-%E3%83%AA%E3%82%AF%E3%82%A8%E3%82%B9%E3%83%88%E3%81%AB%E5%90%AB%E3%81%BE%E3%82%8C%E3%81%AA%E3%81%84
 	quit := make(chan string)
