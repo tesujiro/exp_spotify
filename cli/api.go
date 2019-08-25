@@ -17,17 +17,19 @@ type SpotifyAPI struct {
 }
 */
 
-func get(token string, endpoint string, query map[string]string) ([]byte, error) {
+func get(token string, endpoint string, params url.Values) ([]byte, error) {
 	//fmt.Println("endpoint:", endpoint)
 	baseUrl, err := url.Parse(endpoint)
 	if err != nil {
 		return nil, err
 	}
 	// set query parameters
-	params := url.Values{}
-	for k, v := range query {
-		params.Add(k, v)
-	}
+	/*
+		params := url.Values{}
+		for k, v := range query {
+			params.Add(k, v)
+		}
+	*/
 
 	baseUrl.RawQuery = params.Encode() // Escape Query Parameters
 

@@ -4,18 +4,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"sync"
 )
 
 func _search(token, endpoint, target string, args []string) ([]byte, error) {
-	query := make(map[string]string)
-	query["type"] = target
-	query["limit"] = "50"
+	params := url.Values{}
+	params.Add("limit", fmt.Sprintf("%v", 50))
+	params.Add("type", target)
 	for _, arg := range args {
-		query["q"] = arg
+		params.Add("q", arg)
 	}
-	return get(token, endpoint, query)
+	//fmt.Printf("%#v\n", params)
+	return get(token, endpoint, params)
 }
 
 func search(token string, endpoint string, args []string) {

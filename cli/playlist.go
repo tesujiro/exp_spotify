@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 )
 
@@ -30,12 +31,12 @@ func playlist(token string, endpoint string) {
 	tracks := playlist.Tracks.Items
 	total := playlist.Tracks.Total
 	limit := playlist.Tracks.Limit
-	query := make(map[string]string)
 	endpoint += "/tracks" //TODO: not good
-	query["limit"] = fmt.Sprintf("%v", limit)
+	params := url.Values{}
+	params.Add("limit", fmt.Sprintf("%v", limit))
 	for i := 0; i < total/limit; i++ {
-		query["offset"] = fmt.Sprintf("%v", limit*(i+1))
-		b, err := get(token, endpoint, query)
+		params.Add("offset", fmt.Sprintf("%v", limit*(i+1)))
+		b, err := get(token, endpoint, params)
 		if err != nil {
 			log.Print(err)
 			os.Exit(1)
