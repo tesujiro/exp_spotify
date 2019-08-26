@@ -1,14 +1,11 @@
 package main
 
 import (
-	"crypto/tls"
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
-	"os"
 )
 
 /*
@@ -46,24 +43,7 @@ func call(token, method, endpoint string, params url.Values, body io.Reader) ([]
 	req.Header.Set("Authorization", "Bearer "+token)
 
 	var client *http.Client
-	if os.Getenv("ProxyServer") == "" {
-		client = http.DefaultClient
-	} else {
-		proxyURL, err := url.Parse(os.Getenv("ProxyServer"))
-		if err != nil {
-			log.Println(err)
-		}
-		fmt.Printf("proxyURL=%v\n", proxyURL)
-		transport := &http.Transport{
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
-			},
-			Proxy: http.ProxyURL(proxyURL),
-		}
-		client = &http.Client{
-			Transport: transport,
-		}
-	}
+	client = http.DefaultClient
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Printf("resp=%v\n", resp)

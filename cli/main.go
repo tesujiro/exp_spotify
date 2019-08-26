@@ -35,17 +35,19 @@ func main() {
 
 	cmd := os.Args[1]
 	args := os.Args[2:]
+	//base_url:="https://api.spotify.com"
+	base_url := "http://localhost:8080"
 	endpoint := map[string]string{
-		"devices/me": "https://api.spotify.com/v1/me/player/devices",
-		"search":     "https://api.spotify.com/v1/search",
-		//"player/me":    "https://api.spotify.com/v1/me/player/",
-		"play/me":      "https://api.spotify.com/v1/me/player/play",
-		"playlist":     "https://api.spotify.com/v1/playlists/{playlist_id}",
-		"playlists/me": "https://api.spotify.com/v1/me/playlists",
-		"playlists":    "https://api.spotify.com/v1/users/{user_id}/playlists",
-		"profile/me":   "https://api.spotify.com/v1/me",
-		//"profile/me": "http://www.google.com",
-		"profile": "https://api.spotify.com/v1/users/{user_id}",
+		"devices/me": base_url + "/v1/me/player/devices",
+		"search":     base_url + "/v1/search",
+		//"player/me":    base_url+"/v1/me/player/",
+		"play/me":      base_url + "/v1/me/player/play",
+		"playlist":     base_url + "/v1/playlists/{playlist_id}",
+		"playlists/me": base_url + "/v1/me/playlists",
+		"playlists":    base_url + "/v1/users/{user_id}/playlists",
+		//"profile/me":   base_url+"/v1/me",
+		"profile/me": base_url + "/v1/me",
+		"profile":    base_url + "/v1/users/{user_id}",
 	}
 	switch cmd {
 	case "search":
