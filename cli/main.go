@@ -21,6 +21,8 @@ func usage() {
 `)
 }
 
+const base_url = "https://api.spotify.com"
+
 var (
 	flagOnlyIDs bool
 )
@@ -46,10 +48,11 @@ func main() {
 	cmd := os.Args[0]
 	args := os.Args[1:]
 
-	base_url := "https://api.spotify.com"
-	if os.Getenv("ReverseProxy") != "" {
-		base_url = "http://localhost:8080"
-	}
+	/*
+		if os.Getenv("ReverseProxy") != "" {
+			base_url = "http://localhost:8080"
+		}
+	*/
 	endpoint := map[string]string{
 		"devices/me": base_url + "/v1/me/player/devices",
 		"search":     base_url + "/v1/search",

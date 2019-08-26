@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
+	"strings"
 )
 
 /*
@@ -27,6 +29,10 @@ func put(token string, endpoint string, params url.Values, body io.Reader) ([]by
 }
 
 func call(token, method, endpoint string, params url.Values, body io.Reader) ([]byte, error) {
+	if os.Getenv("ReverseProxy") != "" {
+		proxy := os.Getenv("ReverseProxy")
+		endpoint = strings.Replace(endpoint, base_url, proxy, 1)
+	}
 
 	//fmt.Println("endpoint:", endpoint)
 	baseUrl, err := url.Parse(endpoint)
