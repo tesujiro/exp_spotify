@@ -35,8 +35,11 @@ func main() {
 
 	cmd := os.Args[1]
 	args := os.Args[2:]
-	//base_url:="https://api.spotify.com"
-	base_url := "http://localhost:8080"
+
+	base_url := "https://api.spotify.com"
+	if os.Getenv("ReverseProxy") != "" {
+		base_url = "http://localhost:8080"
+	}
 	endpoint := map[string]string{
 		"devices/me": base_url + "/v1/me/player/devices",
 		"search":     base_url + "/v1/search",
