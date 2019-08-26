@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -9,23 +10,32 @@ import (
 
 func usage() {
 	fmt.Println("Usage:")
-	fmt.Print(`	cli search album(s)|artist(s)|playlist(s)|track(s) [keyword]
-	cli get profile [user_id]
-	cli get playlist [playlist_id]
-	cli get playlists [user_id]
-	cli list device(s)
-	cli list playlist(s)
-	cli list profile
-	cli play [device_id]
+	fmt.Print(`	cli search [-id] album(s)|artist(s)|playlist(s)|track(s) [keyword]
+	cli [-id] get profile [user_id]
+	cli [-id] get playlist [playlist_id]
+	cli [-id] get playlists [user_id]
+	cli [-id] list device(s)
+	cli [-id] list playlist(s)
+	cli [-id] list profile
+	cli [-id] play [device_id]
 `)
 }
 
+var (
+	flagOnlyIDs bool
+)
+
 func main() {
 	var err error
-	if len(os.Args) < 3 {
+	if len(os.Args) < 2 {
 		usage()
 		os.Exit(1)
 	}
+
+	f := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	f.BoolVar(&flagOnlyIDs, "id", false, "displays only IDs")
+	f.Parse(os.Args[1:])
+	os.Args = f.Args()
 
 	token, err := getAccessToken() // CAUTION: The access tokens expire after 1 hour.
 	if err != nil {
@@ -33,8 +43,8 @@ func main() {
 	}
 	//fmt.Println("token:", token)
 
-	cmd := os.Args[1]
-	args := os.Args[2:]
+	cmd := os.Args[0]
+	args := os.Args[1:]
 
 	base_url := "https://api.spotify.com"
 	if os.Getenv("ReverseProxy") != "" {

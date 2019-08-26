@@ -19,5 +19,9 @@ func profile(token string, endpoint string) {
 		log.Print(err)
 		os.Exit(1)
 	}
-	fmt.Printf("User:\t%v\tType: %v\tDisplayName: %v\n", user.Id, user.Type, user.DisplayName)
+	if !flagOnlyIDs {
+		fmt.Printf("User:\t%v\tType: %v\tDisplayName: %v\n", user.Id, user.Type, user.DisplayName)
+	} else {
+		fmt.Printf("%v\n", user.Id)
+	}
 }

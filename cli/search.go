@@ -40,7 +40,9 @@ func search(token string, endpoint string, args []string) {
 			log.Print(err)
 			os.Exit(1)
 		}
-		fmt.Println("Total:", albums.Albums.Total)
+		if !flagOnlyIDs {
+			fmt.Println("Total:", albums.Albums.Total)
+		}
 		// get artists info concurrently for each albums
 		artists := make([][]Artist, len(albums.Albums.Items))
 		wg := sync.WaitGroup{}
@@ -65,15 +67,19 @@ func search(token string, endpoint string, args []string) {
 		wg.Wait()
 		// display album info
 		for i, album := range albums.Albums.Items {
-			fmt.Printf("Album[%v]:\t", i)
-			fmt.Printf("%v\t", album.Id)
-			fmt.Printf("name:%v\t", album.Name)
-			//fmt.Printf("artists:%#v\t", album.Artists)
-			fmt.Printf("artists:")
-			for _, artist := range artists[i] {
-				fmt.Printf(" %v", artist.Name)
+			if !flagOnlyIDs {
+				fmt.Printf("Album[%v]:\t", i)
+				fmt.Printf("%v\t", album.Id)
+				fmt.Printf("name:%v\t", album.Name)
+				//fmt.Printf("artists:%#v\t", album.Artists)
+				fmt.Printf("artists:")
+				for _, artist := range artists[i] {
+					fmt.Printf(" %v", artist.Name)
+				}
+				fmt.Printf("\n")
+			} else {
+				fmt.Printf("%v\n", album.Id)
 			}
-			fmt.Printf("\n")
 		}
 	case "artist", "artists":
 		b, err := _search(token, endpoint, "artist", args[1:])
@@ -92,10 +98,14 @@ func search(token string, endpoint string, args []string) {
 		//spew.Dump(artists)
 		fmt.Println("Total:", artists.Artists.Total)
 		for i, artist := range artists.Artists.Items {
-			fmt.Printf("Artists[%v]:\t", i)
-			fmt.Printf("%v\t", artist.Id)
-			fmt.Printf("name:%v\t", artist.Name)
-			fmt.Printf("\n")
+			if !flagOnlyIDs {
+				fmt.Printf("Artists[%v]:\t", i)
+				fmt.Printf("%v\t", artist.Id)
+				fmt.Printf("name:%v\t", artist.Name)
+				fmt.Printf("\n")
+			} else {
+				fmt.Printf("%v\n", artist.Id)
+			}
 		}
 	case "playlist", "playlists":
 		b, err := _search(token, endpoint, "playlist", args[1:])
@@ -113,11 +123,15 @@ func search(token string, endpoint string, args []string) {
 		}
 		fmt.Println("Total:", playlists.Playlists.Total)
 		for i, playlist := range playlists.Playlists.Items {
-			fmt.Printf("Playlist[%v]:\t", i)
-			fmt.Printf("%v\t", playlist.Id)
-			fmt.Printf("tracks:%v\t", playlist.Tracks.Total)
-			fmt.Printf("name:%v\t", playlist.Name)
-			fmt.Printf("\n")
+			if !flagOnlyIDs {
+				fmt.Printf("Playlist[%v]:\t", i)
+				fmt.Printf("%v\t", playlist.Id)
+				fmt.Printf("tracks:%v\t", playlist.Tracks.Total)
+				fmt.Printf("name:%v\t", playlist.Name)
+				fmt.Printf("\n")
+			} else {
+				fmt.Printf("%v\n", playlist.Id)
+			}
 		}
 	case "track", "tracks":
 		b, err := _search(token, endpoint, "track", args[1:])
@@ -139,17 +153,21 @@ func search(token string, endpoint string, args []string) {
 		}
 		fmt.Println("Total:", tracks.Tracks.Total)
 		for i, track := range tracks.Tracks.Items {
-			fmt.Printf("Track[%v]:\t", i)
-			fmt.Printf("%v\t", track.Id)
-			fmt.Printf("name:%v\t", track.Name)
-			fmt.Printf("%v (", track.Name)
-			sep := ""
-			for _, a := range track.Artists {
-				fmt.Printf("%v%v", sep, a.Name)
-				sep = ", "
+			if !flagOnlyIDs {
+				fmt.Printf("Track[%v]:\t", i)
+				fmt.Printf("%v\t", track.Id)
+				fmt.Printf("name:%v\t", track.Name)
+				fmt.Printf("%v (", track.Name)
+				sep := ""
+				for _, a := range track.Artists {
+					fmt.Printf("%v%v", sep, a.Name)
+					sep = ", "
+				}
+				fmt.Printf(") album: \"%v\"", track.Album.Name)
+				fmt.Printf("\n")
+			} else {
+				fmt.Printf("%v\n", track.Id)
 			}
-			fmt.Printf(") album: \"%v\"", track.Album.Name)
-			fmt.Printf("\n")
 		}
 	default:
 		usage()

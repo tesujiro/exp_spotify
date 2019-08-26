@@ -24,12 +24,16 @@ func devices(token string, endpoint string) {
 		os.Exit(1)
 	}
 	for i, device := range ret.Devices {
-		fmt.Printf("Device[%v]:\t", i)
-		fmt.Printf("%v\t", device.Id)
-		fmt.Printf("name:%v\t", device.Name)
-		fmt.Printf("type:%v\t", device.Type)
-		fmt.Printf("vol:%v%%\t", device.VolumePercent)
-		fmt.Printf("\n")
+		if !flagOnlyIDs {
+			fmt.Printf("Device[%v]:\t", i)
+			fmt.Printf("%v\t", device.Id)
+			fmt.Printf("name:%v\t", device.Name)
+			fmt.Printf("type:%v\t", device.Type)
+			fmt.Printf("vol:%v%%\t", device.VolumePercent)
+			fmt.Printf("\n")
+		} else {
+			fmt.Printf("%v\n", device.Id)
+		}
 	}
 }
 
