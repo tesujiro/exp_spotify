@@ -9,6 +9,8 @@ import (
 	"net/url"
 )
 
+// 参考情報 https://github.com/gregjones/httpcache
+
 const (
 	self   = ":8080"
 	target = "https://api.spotify.com"
