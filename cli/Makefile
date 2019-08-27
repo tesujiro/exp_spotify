@@ -12,3 +12,6 @@ profile:
 
 playlist:
 	./cli get playlists
+
+test:
+	./test.sh ; echo RESULT=$$?

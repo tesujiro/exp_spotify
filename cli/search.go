@@ -127,7 +127,7 @@ func search(token string, endpoint string, args []string) {
 				fmt.Printf("Playlist[%v]:\t", i)
 				fmt.Printf("%v\t", playlist.Id)
 				fmt.Printf("tracks:%v\t", playlist.Tracks.Total)
-				fmt.Printf("name:%v\t", playlist.Name)
+				fmt.Printf("name:%v", playlist.Name)
 				fmt.Printf("\n")
 			} else {
 				fmt.Printf("%v\n", playlist.Id)
