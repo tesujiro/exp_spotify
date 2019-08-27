@@ -48,13 +48,19 @@ info(){
 }
 
 main() {
-    number=1
+    local number=1
+    local EVAL_RC_WANT=0
     for file in $( ls $TESTCASE_DIR/*.$TESTCASE_EXT ) 
     do
-	diff -s <(eval $(get_case $file)) <(get_want $file) > tempfile.$$
-	RESULT=$?
+	RESULT=$(mktemp)
+	eval $(get_case $file) > $RESULT
+	EVAL_RC=$?
 
-	if [ $RESULT == 0 ]
+	diff -s <(cat $RESULT) <(get_want $file) > tempfile.$$
+	DIFF_RC=$?
+	rm -f $RESULT
+
+	if [ $EVAL_RC == $EVAL_RC_WANT -a $DIFF_RC == 0 ]
 	then
 	    CASE_OK=$((++CASE_OK))
 	    debug ======================================
