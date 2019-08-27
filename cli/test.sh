@@ -56,14 +56,14 @@ main() {
 
 	if [ $RESULT == 0 ]
 	then
-	    CASE_OK=$((CASE_OK++))
+	    CASE_OK=$((++CASE_OK))
 	    debug ======================================
 	    debug test $number : $file
 	    get_case $file | debug
 	    debug ======================================
 	    cat tempfile.$$ | debug
 	else
-	    CASE_FAIL=$((CASE_FAIL++))
+	    CASE_FAIL=$((++CASE_FAIL))
 	    TEST_ERROR=true
 	    info ======================================
 	    info test $number : $file
@@ -73,7 +73,7 @@ main() {
 	fi
 
 	rm tempfile.$$
-	number=$((number++))
+	number=$((++number))
     done
 }
 
