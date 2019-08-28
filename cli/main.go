@@ -11,9 +11,9 @@ import (
 func usage() {
 	fmt.Println("Usage:")
 	fmt.Print(`	cli search [-id] album(s)|artist(s)|playlist(s)|track(s) [keyword]
-	cli [-id] get profile [user_id]
-	cli [-id] get playlist [playlist_id]
-	cli [-id] get playlists [user_id]
+	cli [-id] get profile [user_id]+
+	cli [-id] get playlist [playlist_id]+
+	cli [-id] get playlists [user_id]+
 	cli [-id] list device(s)
 	cli [-id] list playlist(s)
 	cli [-id] list profile
@@ -73,35 +73,27 @@ func main() {
 		args = args[1:]
 		switch obj {
 		case "profile":
-			switch len(args) {
-			case 0:
+			if len(args) == 0 {
 				profile(token, endpoint["profile/me"])
-			case 1:
-				ep := strings.ReplaceAll(endpoint["profile"], "{user_id}", args[0])
-				profile(token, ep)
-			default:
-				usage()
-				os.Exit(1)
+			} else {
+				for _, id := range args {
+					ep := strings.ReplaceAll(endpoint["profile"], "{user_id}", id)
+					profile(token, ep)
+				}
 			}
 		case "playlist":
-			switch len(args) {
-			case 1:
-				ep := strings.ReplaceAll(endpoint["playlist"], "{playlist_id}", args[0])
+			for _, id := range args {
+				ep := strings.ReplaceAll(endpoint["playlist"], "{playlist_id}", id)
 				playlist(token, ep)
-			default:
-				usage()
-				os.Exit(1)
 			}
 		case "playlists":
-			switch len(args) {
-			case 0:
+			if len(args) == 0 {
 				playlists(token, endpoint["playlists/me"])
-			case 1:
-				ep := strings.ReplaceAll(endpoint["playlists"], "{user_id}", args[0])
-				playlists(token, ep)
-			default:
-				usage()
-				os.Exit(1)
+			} else {
+				for _, id := range args {
+					ep := strings.ReplaceAll(endpoint["playlists"], "{user_id}", id)
+					playlists(token, ep)
+				}
 			}
 		default:
 			usage()

@@ -121,7 +121,9 @@ func search(token string, endpoint string, args []string) {
 			log.Print(err)
 			os.Exit(1)
 		}
-		fmt.Println("Total:", playlists.Playlists.Total)
+		if !flagOnlyIDs {
+			fmt.Println("Total:", playlists.Playlists.Total)
+		}
 		for i, playlist := range playlists.Playlists.Items {
 			if !flagOnlyIDs {
 				fmt.Printf("Playlist[%v]:\t", i)
