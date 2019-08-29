@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -12,12 +13,14 @@ import (
 // 参考情報 https://github.com/gregjones/httpcache
 
 const (
-	self   = ":8080"
-	target = "https://api.spotify.com"
+	self          = ":8080"
+	target        = "https://api.spotify.com"
+	cacheFilename = "cache.gob"
 )
 
 var (
-	cache = make(map[string][]byte) // Cache Key:URL Value:response.Body
+	//cache = make(map[string][]byte) // Cache Key:URL Value:response.Body
+	cache = newHttpCache() // Cache Key:URL Value:response.Body
 )
 
 func main() {
@@ -29,9 +32,89 @@ func main() {
 	proxy := httputil.NewSingleHostReverseProxy(remote)
 	proxy.Transport = &myTransport{}
 	http.HandleFunc("/", handler(proxy))
+	http.HandleFunc("/api", apiHandler)
+	http.HandleFunc("/list", listHandler)
+	http.HandleFunc("/save", saveHandler)
+	http.HandleFunc("/load", loadHandler)
 	err = http.ListenAndServe(self, nil)
 	if err != nil {
 		panic(err)
+	}
+}
+
+func apiHandler(w http.ResponseWriter, r *http.Request) {
+	//fmt.Fprintf(w, "Hello apiHandler")
+	method := r.Method
+	v := r.URL.Query()
+	fmt.Fprintf(w, "Hello apiHandler: method:%v\n", method)
+	var urls []string
+	for key, values := range v {
+		//fmt.Fprintf(w, "%s = %s\n", key, values)
+		if key == "url" {
+			urls = values
+		}
+	}
+	/*
+		for _, url := range urls {
+			fmt.Fprintf(w, "GET key:%v\n", url)
+		}
+	*/
+	switch method {
+	case "GET":
+	case "POST":
+	case "PUT":
+	case "DELETE":
+		for _, url := range urls {
+			if _, ok := cache.get(url); ok {
+				// TODO: lock object
+				cache.del(url)
+				fmt.Printf("cache [%v] deleted.\n", url)
+				fmt.Fprintf(w, "cache [%v] deleted.\n", url)
+			} else {
+				fmt.Printf("cache [%v] does not exist.\n", url)
+				fmt.Fprintf(w, "cache [%v] does not exist.\n", url)
+			}
+		}
+	default:
+		fmt.Fprintf(w, "invalid method:%v\n", method)
+	}
+}
+
+func saveHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello saveHandler\n")
+	// TODO: lock object
+	err := cache.save()
+	if err != nil {
+		log.Printf("save cache error: %v\n", err)
+		return
+	}
+	for key, _ := range cache.items {
+		fmt.Fprintf(w, "%v\n", key)
+	}
+	log.Printf("cache save finished :%v\n", len(cache.items))
+}
+
+func loadHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello loadHandler\n")
+	err := cache.load()
+	if err != nil {
+		log.Printf("load cache error: %v\n", err)
+		return
+	}
+	for key, _ := range cache.items {
+		fmt.Fprintf(w, "%v\n", key)
+	}
+	log.Printf("cache load finished :%v\n", len(cache.items))
+}
+
+func listHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello listHandler.\nkeys:\n")
+	if len(cache.items) == 0 { //TODO
+		fmt.Fprintf(w, "no cache key\n")
+	} else {
+		for key, _ := range cache.items {
+			fmt.Fprintf(w, "[%v]\n", key)
+		}
 	}
 }
 
@@ -66,7 +149,8 @@ func (t *myTransport) RoundTrip(request *http.Request) (*http.Response, error) {
 	}
 	if canCache {
 		// get cache
-		if cachedBody, ok := cache[cacheKey]; ok {
+		// TODO: lock object
+		if cachedBody, ok := cache.get(cacheKey); ok {
 			log.Println("cache hit [" + request.Method + "] " + cacheKey)
 
 			b := bytes.NewBuffer(cachedBody)
@@ -94,7 +178,8 @@ func (t *myTransport) RoundTrip(request *http.Request) (*http.Response, error) {
 
 	// set cache
 	if canCache {
-		cache[cacheKey] = body
+		// TODO: lock object
+		cache.set(cacheKey, body)
 	}
 
 	return response, err
