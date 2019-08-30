@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 
 	"github.com/tesujiro/exp_spotify/reverse-proxy/easyCache"
 )
@@ -15,16 +16,22 @@ import (
 // 参考情報 https://github.com/gregjones/httpcache
 
 const (
-	self          = ":8080"
-	target        = "https://api.spotify.com"
-	cacheFilename = "cache.gob"
+	self   = ":8080"
+	target = "https://api.spotify.com"
 )
 
 var (
-	cache = easyCache.NewHttpCache(cacheFilename)
+	cache         = easyCache.NewHttpCache(cacheFilename)
+	cacheFilename = "cache.gob"
 )
 
 func main() {
+	if len(os.Args) == 2 {
+		cacheFilename = os.Args[1]
+		fmt.Println("use CacheFile ", os.Args[1])
+		cache = easyCache.NewHttpCache(cacheFilename)
+	}
+
 	remote, err := url.Parse(target)
 	if err != nil {
 		panic(err)

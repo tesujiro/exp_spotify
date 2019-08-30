@@ -15,3 +15,12 @@ playlist:
 
 test:
 	./test.sh ; echo RESULT=$$?
+
+save-cache:
+	curl -X GET "http://localhost:8080/save"
+
+
+load-cache:
+	curl -X GET "http://localhost:8080/load"
+
+

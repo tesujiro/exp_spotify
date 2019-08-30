@@ -83,6 +83,17 @@ main() {
     done
 }
 
+# start reverse-proxy
+REVPRO=reverse-proxy
+REVPRO_PATH="../reverse-proxy/reverse-proxy ../reverse-proxy/cache.gob"
+[ `ps -ef|grep $REVPRO |grep -v grep |wc -l` -eq 0 ] \
+    && (
+    echo Reverse-Proxy Server
+    $REVPRO_PATH &
+    sleep 0.1
+    curl -X GET "http://localhost:8080/load"
+)
+
 while getopts ":dq" OPT
 do
     case $OPT in
