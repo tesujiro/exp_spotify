@@ -10,6 +10,12 @@ type httpCache struct {
 	items    map[string][]byte
 }
 
+// Current HttpCache implementation is NOT "thread-safe".
+// use goroutine and channel for singleton
+// getReq, getRes
+// setReq, delReq, loadReq, saveReq, resChan
+// itemsReq, itemsRes
+
 func NewHttpCache(cacheFilename string) httpCache {
 	c := httpCache{
 		filepath: cacheFilename,
