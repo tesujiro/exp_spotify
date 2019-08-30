@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+
+	"github.com/tesujiro/exp_spotify/reverse-proxy/easyCache"
 )
 
 // 参考情報 https://github.com/gregjones/httpcache
@@ -19,8 +21,7 @@ const (
 )
 
 var (
-	//cache = make(map[string][]byte) // Cache Key:URL Value:response.Body
-	cache = newHttpCache() // Cache Key:URL Value:response.Body
+	cache = easyCache.NewHttpCache(cacheFilename)
 )
 
 func main() {
@@ -65,9 +66,9 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	case "PUT":
 	case "DELETE":
 		for _, url := range urls {
-			if _, ok := cache.get(url); ok {
+			if _, ok := cache.Get(url); ok {
 				// TODO: lock object
-				cache.del(url)
+				cache.Del(url)
 				fmt.Printf("cache [%v] deleted.\n", url)
 				fmt.Fprintf(w, "cache [%v] deleted.\n", url)
 			} else {
@@ -83,36 +84,36 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 func saveHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello saveHandler\n")
 	// TODO: lock object
-	err := cache.save()
+	err := cache.Save()
 	if err != nil {
 		log.Printf("save cache error: %v\n", err)
 		return
 	}
-	for key, _ := range cache.items {
+	for key, _ := range cache.Items() {
 		fmt.Fprintf(w, "%v\n", key)
 	}
-	log.Printf("cache save finished :%v\n", len(cache.items))
+	log.Printf("cache save finished :%v\n", len(cache.Items()))
 }
 
 func loadHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello loadHandler\n")
-	err := cache.load()
+	err := cache.Load()
 	if err != nil {
 		log.Printf("load cache error: %v\n", err)
 		return
 	}
-	for key, _ := range cache.items {
+	for key, _ := range cache.Items() {
 		fmt.Fprintf(w, "%v\n", key)
 	}
-	log.Printf("cache load finished :%v\n", len(cache.items))
+	log.Printf("cache load finished :%v\n", len(cache.Items()))
 }
 
 func listHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello listHandler.\nkeys:\n")
-	if len(cache.items) == 0 { //TODO
+	if len(cache.Items()) == 0 { //TODO
 		fmt.Fprintf(w, "no cache key\n")
 	} else {
-		for key, _ := range cache.items {
+		for key, _ := range cache.Items() {
 			fmt.Fprintf(w, "[%v]\n", key)
 		}
 	}
@@ -150,7 +151,7 @@ func (t *myTransport) RoundTrip(request *http.Request) (*http.Response, error) {
 	if canCache {
 		// get cache
 		// TODO: lock object
-		if cachedBody, ok := cache.get(cacheKey); ok {
+		if cachedBody, ok := cache.Get(cacheKey); ok {
 			log.Println("cache hit [" + request.Method + "] " + cacheKey)
 
 			b := bytes.NewBuffer(cachedBody)
@@ -179,7 +180,7 @@ func (t *myTransport) RoundTrip(request *http.Request) (*http.Response, error) {
 	// set cache
 	if canCache {
 		// TODO: lock object
-		cache.set(cacheKey, body)
+		cache.Set(cacheKey, body)
 	}
 
 	return response, err

@@ -1,4 +1,4 @@
-package main
+package easyCache
 
 import (
 	"encoding/gob"
@@ -10,7 +10,7 @@ type httpCache struct {
 	items    map[string][]byte
 }
 
-func newHttpCache() httpCache {
+func NewHttpCache(cacheFilename string) httpCache {
 	c := httpCache{
 		filepath: cacheFilename,
 		items:    make(map[string][]byte),
@@ -18,20 +18,24 @@ func newHttpCache() httpCache {
 	return c
 }
 
-func (c *httpCache) set(key string, value []byte) {
+func (c *httpCache) Items() map[string][]byte {
+	return c.items
+}
+
+func (c *httpCache) Set(key string, value []byte) {
 	c.items[key] = value
 }
 
-func (c *httpCache) del(key string) {
+func (c *httpCache) Del(key string) {
 	delete(c.items, key)
 }
 
-func (c *httpCache) get(key string) ([]byte, bool) {
+func (c *httpCache) Get(key string) ([]byte, bool) {
 	val, ok := c.items[key]
 	return val, ok
 }
 
-func (c *httpCache) load() error {
+func (c *httpCache) Load() error {
 	fd, err := os.Open(c.filepath)
 	if err != nil {
 		return err
@@ -46,7 +50,7 @@ func (c *httpCache) load() error {
 	return nil
 }
 
-func (c *httpCache) save() error {
+func (c *httpCache) Save() error {
 	fd, err := os.Create(c.filepath)
 	if err != nil {
 		return err
